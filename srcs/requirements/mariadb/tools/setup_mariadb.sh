@@ -1,23 +1,25 @@
-#!/bin/bash
+# Create the directory /run/mysqld if it doesn't exist
+mkdir -p /run/mysqld
 
-# Exit on any error
-echo "Hello from setup_mariadb.sh"
-set -e
-# Source environment variables from .env file in the specified directory
-ENV_DIR="/Users/aaskal/Desktop/inception/srcs"
-if [ -f "$ENV_DIR/.env" ]; then
-    export $(cat "$ENV_DIR/.env" | xargs)
-fi
+# Change the ownership of the /run/mysqld directory to the mysql user and group
+chown -R mysql:mysql /run/mysqld
 
-# Start MariaDB service
-service mysql start
+# Set the permissions of the /run/mysqld directory to be readable, writable, and executable by everyone
+chmod 777 /run/mysqld
 
-# Configure MariaDB
-mysql -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};"
-mysql -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
-mysql -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';"
-mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
-mysql -e "FLUSH PRIVILEGES;"
+# Create an empty file named init.sql
+touch init.sql
 
-# Keep MariaDB running in the foreground
-exec mysqld_safe
+# Write SQL commands to the init.sql file
+echo 'USE mysql;' > init.sql
+echo 'FLUSH PRIVILEGES;' >> init.sql
+echo "CREATE DATABASE wordpress;" >> init.sql
+echo "CREATE USER 'usertest'@'%' IDENTIFIED BY 'password';" >> init.sql
+echo "GRANT ALL PRIVILEGES ON wordpress.* TO 'usertest'@'%';" >> init.sql
+echo 'FLUSH PRIVILEGES;' >> init.sql
+
+# Execute the SQL commands in init.sql as the root user
+mariadb --user=root  < init.sql
+
+# Start the MariaDB server with the mysql user and bind it to all network interfaces
+mariadbd --user=mysql --bind-address=0.0.0.0
