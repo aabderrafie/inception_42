@@ -1,29 +1,30 @@
-# Use Debian 12.8 as the base image
-FROM debian:12.8
+FROM debian:12
 
-# Set environment variables for non-interactive installation
-ENV DEBIAN_FRONTEND=noninteractive
+# Install necessary packages for PHP
+RUN apt-get update && apt-get -y install \
+    wget \
+    php \
+    php-cgi \
+    php-mysql \
+    php-fpm \
+    php-pdo \
+    php-gd \
+    php-cli \
+    php-mbstring \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install PHP, PHP-FPM, and necessary extensions
-RUN apt update && \
-    apt install -y php-fpm php-mysql php-cli php-json php-common php-xml php-mbstring php-curl php-zip unzip wget && \
-    apt clean
+# Create the folder to enable PHP start if it doesn't exist
+RUN mkdir -p /run/php
 
-# Install WordPress
-RUN wget https://wordpress.org/latest.tar.gz && \
-    tar -xzvf latest.tar.gz && \
-    mkdir -p /var/www/html && \
-    mv wordpress /var/www/html/ && \
-    chown -R www-data:www-data /var/www/html/wordpress
+# Copy the necessary tools to download WordPress
+COPY ./tools/setup_wp.sh /usr/local/bin/
+COPY ./conf/www.conf /etc/php/8.2/fpm/pool.d/
 
-# Copy the configuration script into the container
-COPY tools/setup_php.sh /usr/local/bin/setup_php.sh
+# Set the working directory
+WORKDIR /var/www/html/
 
-# Make the script executable
-RUN chmod +x /usr/local/bin/setup_php.sh
-
-# Expose PHP-FPM port
+# Expose port 9000
 EXPOSE 9000
 
-# Run the PHP-FPM service and setup script
-CMD ["/usr/local/bin/setup_php.sh"]
+# Launch script
+CMD ["setup_wp.sh"]
