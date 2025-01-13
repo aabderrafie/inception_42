@@ -1,9 +1,8 @@
-version: '3.8'
-
 services:
   # WordPress service
   wordpress:
     container_name: wordpress
+    image: wordpress:13.37
     depends_on:
       - mariadb
     build:
@@ -13,18 +12,22 @@ services:
     env_file:
       - .env
     volumes:
-      - /home/abderrafie/data/wordpress:/var/www/html
+      - wordpress_data:/var/www/html/wordpress
     networks:
       - network
     ports:
       - "9000:9000"
+    secrets:
+      - db_password
+      - credentials
 
   # MariaDB service
   mariadb:
     container_name: mariadb
+    image: mariadb:13.37
     build: ./requirements/mariadb
     volumes:
-      - /home/abderrafie/data/mariadb:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     networks:
       - network
     restart: always
@@ -32,24 +35,123 @@ services:
       - .env
     ports:
       - "3306:3306"
-
+    secrets:
+      - db_password
+      - db_root_password
+  
+  # Nginx service
   nginx:
     container_name: nginx
+    image: nginx:13.37
     build: ./requirements/nginx
     depends_on:
       - wordpress
     ports:
       - 443:443
     volumes:
-      - /home/abderrafie/data/wordpress:/var/www/html
+      - wordpress_data:/var/www/html/wordpress
     restart: always
     networks:
       - network
 
+  # Redis service
+  redis:
+    container_name: redis
+    image: redis:13.37
+    build: ./requirements/bonus/redis
+    restart: always
+    networks:
+      - network
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # FTP service
+  vsftpd:
+    container_name: vsftpd
+    image: vsftpd:13.37
+    build: ./requirements/bonus/vsftpd
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010" 
+    restart: always
+    networks:
+      - network
+    volumes:
+      - wordpress_data:/var/www/html/wordpress
+    env_file:
+      - .env
+    secrets:
+      - credentials
+  
+  # Adminer service
+  adminer:
+    container_name: adminer
+    image: adminer:13.37
+    build: ./requirements/bonus/adminer
+    restart: always
+    ports:
+       - "9090:9090"
+    networks:
+      - network
+    depends_on:
+        - mariadb 
+
+  # cadvisor service
+  cadvisor:
+    container_name: cadvisor
+    image: cadvisor:13.37
+    build: ./requirements/bonus/cadvisor
+    ports:
+      - "8080:8080"
+    networks:
+      - network
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro 
+      - /sys:/sys:ro 
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: always
+
+  # website service
+  website:
+    container_name: website
+    image: website:13.37
+    build: ./requirements/bonus/website
+    ports:
+      - "4242:80"
+    networks:
+      - network
+    restart: always
+    depends_on:
+      - nginx
 volumes:
   wordpress_data:
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/abderrafie/data/wordpress    
+  redis_data:
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/abderrafie/data/redis
   mariadb_data:
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/abderrafie/data/mariadb
+
 
 networks:
   network:
     driver: bridge
+  
+secrets:
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  db_password:
+    file: ../secrets/db_password.txt
+  credentials:
+    file: ../secrets/credentials.txt

@@ -1,25 +1,22 @@
-# Create the directory /run/mysqld if it doesn't exist
+#!/bin/bash
+
+DB_PASSWORD=$(cat /run/secrets/db_password)
+DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+
 mkdir -p /run/mysqld
-
-# Change the ownership of the /run/mysqld directory to the mysql user and group
 chown -R mysql:mysql /run/mysqld
-
-# Set the permissions of the /run/mysqld directory to be readable, writable, and executable by everyone
 chmod 777 /run/mysqld
 
-# Create an empty file named init.sql
 touch init.sql
 
-# Write SQL commands to the init.sql file
-echo 'USE mysql;' > init.sql
-echo 'FLUSH PRIVILEGES;' >> init.sql
-echo "CREATE DATABASE wordpress;" >> init.sql
-echo "CREATE USER 'usertest'@'%' IDENTIFIED BY 'password';" >> init.sql
-echo "GRANT ALL PRIVILEGES ON wordpress.* TO 'usertest'@'%';" >> init.sql
+echo 'FLUSH PRIVILEGES;' > init.sql
+echo 'USE mysql;' >> init.sql
+echo "CREATE DATABASE IF NOT EXISTS ${DB_NAME};" >> init.sql
+echo "CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';" >> init.sql
+echo "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';" >> init.sql
+echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASSWORD}';" >> init.sql
 echo 'FLUSH PRIVILEGES;' >> init.sql
 
-# Execute the SQL commands in init.sql as the root user
-mariadb --user=root  < init.sql
+mariadbd --user=mysql --bootstrap < init.sql
 
-# Start the MariaDB server with the mysql user and bind it to all network interfaces
-mariadbd --user=mysql --bind-address=0.0.0.0
+exec "$@"

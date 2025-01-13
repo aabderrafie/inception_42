@@ -1,30 +1,30 @@
-#!/bin/sh
+#!/bin/bash
 
-MYSQL_DATABASE="wordpress"
-MYSQL_USER="wordpress"
-MYSQL_PASSWORD="password"
-MYSQL_HOSTNAME="mysql"
+DB_PASSWORD=$(cat /run/secrets/db_password)
+ADMIN_PASSWORD=$(cat /run/secrets/credentials | head -n -1)
+USER_PASSWORD=$(cat /run/secrets/credentials | tail -1)
 
-if [ -f ./wordpress/wp-config.php ]; then
-    echo "WordPress already downloaded"
-else
-    # Download WordPress
-    wget https://wordpress.org/latest.tar.gz
-    tar -xzvf latest.tar.gz
-    rm -rf latest.tar.gz
+# Install WordPress
+wget https://wordpress.org/latest.tar.gz
+tar -xvzf latest.tar.gz
+rm -fr latest.tar.gz
 
-    # Update configuration file
-    rm -rf /etc/php/8.2/fpm/pool.d/www.conf
-    mv ./www.conf /etc/php/8.2/fpm/pool.d/
+chown -R www-data:www-data /var/www/html/wordpress
+chmod -R 777 /var/www/html/wordpress
 
-    # Import env variables in the config file
-    cd /var/www/html/wordpress
-    sed -i "s/username_here/$MYSQL_USER/g" wp-config-sample.php
-    sed -i "s/password_here/$MYSQL_PASSWORD/g" wp-config-sample.php
-    sed -i "s/localhost/$MYSQL_HOSTNAME/g" wp-config-sample.php
-    sed -i "s/database_name_here/$MYSQL_DATABASE/g" wp-config-sample.php
-    mv wp-config-sample.php wp-config.php
-fi
+cd wordpress
+wp config create --dbname="${DB_NAME}" --dbuser="${DB_USER}" --dbpass="${DB_PASSWORD}" --dbhost="${DB_HOST}" --allow-root
 
-# Start PHP-FPM
-exec /usr/sbin/php-fpm8.2 -F
+wp core install --url="10.11.248.74" --title="${TITLE}" --admin_user="${ADMIN_USER}" --admin_password="${ADMIN_PASSWORD}" --admin_email="${ADMIN_EMAIL}" --allow-root
+
+wp user create $EDITOR_USER $EDITOR_USER@1337.com --user_pass="${USER_PASSWORD}" --role=editor --allow-root
+
+wp theme install saaslauncher --allow-root
+wp theme activate saaslauncher --allow-root
+
+wp config set WP_REDIS_HOST 'redis' --allow-root
+wp config set WP_CACHE 'true' --raw --allow-root
+wp plugin install redis-cache --activate --allow-root
+wp redis enable --allow-root
+
+exec php-fpm8.2 -F

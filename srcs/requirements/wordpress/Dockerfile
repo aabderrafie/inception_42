@@ -1,30 +1,28 @@
 FROM debian:12
 
-# Install necessary packages for PHP
 RUN apt-get update && apt-get -y install \
     wget \
     php \
-    php-cgi \
-    php-mysql \
     php-fpm \
+    php-mysql \
     php-pdo \
-    php-gd \
-    php-cli \
     php-mbstring \
+    curl \
+    less \
     && rm -rf /var/lib/apt/lists/*
 
-# Create the folder to enable PHP start if it doesn't exist
-RUN mkdir -p /run/php
+RUN mkdir -p /run/php && sed -i "s/^listen = .*/listen = 0.0.0.0:9000/" /etc/php/8.2/fpm/pool.d/www.conf
 
-# Copy the necessary tools to download WordPress
+# Install WP-CLI
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp
+
 COPY ./tools/setup_wp.sh /usr/local/bin/
-COPY ./conf/www.conf /etc/php/8.2/fpm/pool.d/
+RUN chmod +x /usr/local/bin/setup_wp.sh
 
-# Set the working directory
 WORKDIR /var/www/html/
 
-# Expose port 9000
 EXPOSE 9000
 
-# Launch script
 CMD ["setup_wp.sh"]
