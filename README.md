@@ -1,146 +1,283 @@
-Sure! Below is a template for your **README.md** file. You can modify the specific parts such as your name, GitHub username, etc., according to your project details.
+# **Inception Project**
+
+## **Overview**
+The **Inception** project is a system administration exercise that expands your knowledge of Docker, containerization, and virtual environments. The project involves building an infrastructure using Docker, where multiple services (NGINX, WordPress, MariaDB, Redis, FTP, Portainer, etc.) run in isolated containers that communicate via a private Docker network.
 
 ---
 
-# Inception Project - System Administration with Docker
-
-This project was part of a system administration course aimed at understanding the basic concepts of Docker, Docker Compose, and infrastructure management. The goal was to deploy multiple services, such as **NGINX**, **WordPress**, **MariaDB**, and others, on a personal virtual machine, using Docker and Docker Compose.
-
-## Project Overview
-
-In this project, I set up an infrastructure composed of the following services:
-
-- **NGINX**: A reverse proxy and entry point to the system, configured to use TLSv1.2 or TLSv1.3 encryption.
-- **WordPress**: A dynamic website engine running alongside PHP-FPM.
-- **MariaDB**: A relational database management system for storing WordPress data.
-- **Volumes**: Separate volumes for storing WordPress database and website files.
-- **Docker Network**: A private Docker network to facilitate communication between services.
-- **Makefile**: Used for automating the build process with `docker-compose.yml`.
-  
-Additionally, I configured environment variables using a `.env` file and Docker secrets for securely managing credentials.
-
-## Key Features
-
-- **Virtual Machine Setup**: Entire application runs within a virtual machine using Docker.
-- **Dockerized Services**: Each service is containerized using custom `Dockerfile`s.
-- **Automatic Restart**: Containers are set to restart in case of failure.
-- **TLS Configuration**: NGINX is configured to support only TLSv1.2 and TLSv1.3 for secure connections.
-- **Custom Domain**: Set up a custom domain (e.g., `wil.42.fr`) that resolves to the local machine's IP.
-- **Environment Variables**: Sensitive data like passwords and configuration details are managed using environment variables.
-  
-### Dockerized Services
-
-- **NGINX**: Serves as the reverse proxy for the entire application, handling HTTPS traffic.
-- **WordPress**: WordPress installation with PHP-FPM configured. The WordPress container does not use NGINX directly.
-- **MariaDB**: A separate container running MariaDB for the WordPress database.
-- **Volumes**:
-  - **WordPress database volume**: Persistent storage for the WordPress database.
-  - **WordPress website files volume**: Persistent storage for WordPress files (themes, plugins, uploads).
-- **Docker Network**: Containers communicate over an isolated Docker network to avoid external conflicts.
-
-### Example Directory Structure
-
-```
-.
-├── Makefile
-├── secrets/
-│   ├── credentials.txt
-│   ├── db_password.txt
-│   └── db_root_password.txt
-├── srcs/
-│   ├── docker-compose.yml
-│   ├── .env
-│   └── requirements/
-│       ├── mariadb/
-│       ├── nginx/
-│       ├── wordpress/
-│       └── tools/
-└── .gitignore
-```
-
-## Getting Started
-
-To get started with this project on your own machine, follow these steps:
-
-### Prerequisites
-
-Make sure you have the following installed on your system:
-
-- **Docker** (with Docker Compose)
-- **Git**
-
-### Setup Instructions
-
-1. Clone this repository:
-
-   ```bash
-   git clone https://github.com/yourusername/inception.git
-   cd inception
-   ```
-
-2. Create the `.env` file based on the `.env.example` template provided (replace placeholder values).
-
-3. Build and start the containers using `docker-compose`:
-
-   ```bash
-   make
-   ```
-
-4. You can now access the WordPress site via your custom domain (e.g., `wil.42.fr`).
-
-### NGINX Configuration
-
-- **TLSv1.2 / TLSv1.3**: Only these versions of TLS are supported for secure communication.
-- **HTTPS Port**: All communication is handled through HTTPS on port 443.
-- **No HTTP (port 80)**: This is restricted in favor of secure communication.
-
-### WordPress Configuration
-
-- A WordPress instance will be automatically installed with the default settings.
-- You need to access it through the NGINX container on your specified domain name.
-
-### MariaDB Configuration
-
-- The MariaDB container is configured to create an initial database and a set of users upon startup. The credentials are provided through environment variables.
-
-### Volumes
-
-- Two volumes are created for WordPress: one for the database and one for the website files. These are persisted between container restarts.
-
-## Bonus Features
-
-I also implemented some bonus features to extend the functionality of the infrastructure:
-
-1. **Redis Cache**: Configured a Redis container to cache WordPress data and speed up the website.
-2. **FTP Server**: Set up an FTP server for file management within the WordPress container.
-3. **Static Website**: Created a simple static website for personal use (resume, portfolio, etc.).
-4. **Adminer**: A lightweight database management tool accessible from the browser.
-5. **Custom Service**: I chose to set up a custom service that improves my workflow and justifies its usefulness.
-
-## Security Considerations
-
-- **No passwords in Dockerfiles**: All sensitive information is handled via environment variables and Docker secrets.
-- **Environment Variables**: Credentials like database passwords are stored securely in a `.env` file and passed into the containers via Docker Compose.
-  
-## Technologies Used
-
-- **Docker**: Containerization platform for running services in isolated environments.
-- **Docker Compose**: Tool for defining and running multi-container Docker applications.
-- **NGINX**: Web server and reverse proxy.
-- **WordPress**: Content management system (CMS) for creating websites.
-- **MariaDB**: Relational database management system (RDBMS).
-- **PHP-FPM**: PHP FastCGI Process Manager, used to serve dynamic WordPress content.
-
-## Notes
-
-- **No ready-made Docker images were used**: All Docker images were custom-built for this project.
-- **No infinite loops**: The containers are designed to run services as proper daemons without resorting to hacks like `tail -f` or `sleep infinity`.
-- **Performance**: The containers are built using Alpine or Debian (penultimate stable version) for optimal performance.
-
-## Final Remarks
-
-This project has been a comprehensive introduction to Docker, containerized services, and system administration. It helped me learn how to set up multiple interconnected services on a single machine and manage them with Docker Compose. I also gained experience working with TLS encryption, environment variables, and secure configurations.
+## **Table of Contents**
+1. [Introduction](#introduction)
+2. [General Guidelines](#general-guidelines)
+3. [Mandatory Part](#mandatory-part)
+4. [Bonus Part](#bonus-part)
+5. [Installation and Usage](#installation-and-usage)
+6. [Makefile Commands](#makefile-commands)
+7. [Contributing](#contributing)
+8. [License](#license)
+9. [Acknowledgements](#acknowledgements)
 
 ---
 
-This template should help you get started with creating your **README.md**. Adjust any project-specific details as necessary and feel free to add more sections if needed (such as troubleshooting, detailed configurations, etc.).
+## **Introduction**
+The goal of this project is to create a small Docker-based infrastructure with services running in isolated containers. You'll be setting up various services (NGINX, WordPress, MariaDB, Redis, FTP, Portainer, etc.) and configuring communication between these containers via a Docker network.
+
+Portainer is used as an additional service for managing Docker containers via a web interface.
+
+---
+
+## **General Guidelines**
+
+- **Virtual Machine (VM)**: This project should be completed within a virtual machine.
+- **Directory Structure**: All project-related files should be located in the `srcs/` folder.
+- **Makefile**: The provided Makefile automates various tasks like building, running, and cleaning up Docker containers.
+- **Docker Setup**: Dockerfiles for each service are provided, which will be built and managed using Docker Compose.
+- **Containers**: Each service runs in its own Docker container and restarts automatically in case of a crash.
+- **Docker Network**: Containers communicate via a Docker network defined in `docker-compose.yml`.
+- **Domain Name**: A custom domain (e.g., `your_login.42.fr`) must be set up to point to your local IP.
+
+---
+
+## **Mandatory Part**
+
+### **Required Services**
+You need to set up the following services in Docker containers:
+
+1. **NGINX**:
+   - Configure to use only TLSv1.2 or TLSv1.3.
+   - Acts as the entry point to your infrastructure via port 443.
+
+2. **WordPress**:
+   - Runs with PHP-FPM (without NGINX).
+   - Connects to the MariaDB container for the WordPress database.
+
+3. **MariaDB**:
+   - Runs the database for WordPress.
+   - Includes two database users: one administrator (without `admin` in the username) and one regular user.
+
+4. **Redis** (Bonus):
+   - Provides caching for WordPress.
+
+5. **FTP Server** (Bonus):
+   - An FTP server for managing WordPress website files.
+
+6. **Portainer** (Bonus):
+   - A web-based Docker management interface for managing containers, images, networks, and volumes.
+
+### **Networking**
+- All containers should communicate over a Docker network defined in `docker-compose.yml`.
+- Ensure no containers are started with infinite loops like `tail -f`, `sleep infinity`, or `while true`.
+
+### **Security**
+- **Passwords** and **credentials** should be stored securely using **Docker secrets** and `.env` files.
+- Do **not** hardcode passwords in Dockerfiles.
+
+---
+
+## **Bonus Part**
+
+### **Extra Features**
+You can add the following features to the project as part of the bonus:
+
+- **Redis Cache**: Set up Redis to cache your WordPress website.
+- **FTP Server**: Set up an FTP server to manage WordPress website files.
+- **Static Website**: Create a simple static website (excluding PHP).
+- **Adminer**: Set up Adminer to manage your MariaDB database through a web interface.
+- **Portainer**: Set up Portainer for managing Docker containers via a web interface.
+- **Additional Service**: Set up any extra service you find useful and explain its purpose during your defense.
+
+> **Note**: Bonus features will only be evaluated if the mandatory requirements are fully completed.
+
+---
+
+## **Installation and Usage**
+
+### **Clone the Repository**
+Clone the repository to your local machine using:
+
+```bash
+git clone https://github.com/aabderrafie/inception_42
+cd inception
+```
+
+### **Build the Docker Images**
+Run the following command to build the Docker images:
+
+```bash
+make build
+```
+
+### **Run the Docker Containers**
+To start the containers and set up the services:
+
+```bash
+make up
+```
+
+This will start all the necessary containers in detached mode.
+
+### **Check Logs**
+To view logs for the running containers:
+
+```bash
+make logs
+```
+
+### **Stop and Clean Up Containers**
+To stop and remove the containers:
+
+```bash
+make down
+```
+
+This command stops and removes the containers but does not remove volumes or networks.
+
+### **Full Cleanup**
+To clean up Docker volumes and system resources:
+
+```bash
+make clean
+```
+
+This will remove unused Docker volumes.
+
+### **Full System Clean**
+To completely clean up the system, including volumes and unused Docker system resources:
+
+```bash
+make fclean
+```
+
+This command performs a full system clean and removes all data directories.
+
+### **Rebuild Everything**
+To rebuild all containers and services from scratch:
+
+```bash
+make re
+```
+
+### **Check Docker Container Status**
+To check the status of your Docker containers:
+
+```bash
+make status
+```
+
+---
+
+## **Makefile Commands**
+
+Below is a list of available Makefile commands:
+
+### **all**
+Runs the `build` and `up` commands to build Docker images and bring up the containers.
+
+```bash
+make all
+```
+
+### **build**
+Builds the Docker images for all services defined in `docker-compose.yml`.
+
+```bash
+make build
+```
+
+### **up**
+Sets up the necessary directories and starts the Docker containers.
+
+```bash
+make up
+```
+
+### **down**
+Stops and removes the running containers.
+
+```bash
+make down
+```
+
+### **clean**
+Stops and removes containers and then prunes unused Docker volumes.
+
+```bash
+make clean
+```
+
+### **fclean**
+Performs a full system cleanup by stopping and removing containers, cleaning up volumes, and removing data directories.
+
+```bash
+make fclean
+```
+
+### **re**
+Rebuilds everything from scratch by running `fclean` and `all`.
+
+```bash
+make re
+```
+
+### **status**
+Displays the status of all running Docker containers.
+
+```bash
+make status
+```
+
+---
+
+## **Contributing**
+Contributions are welcome! To contribute:
+
+1. Fork the repository.
+2. Make your changes.
+3. Create a pull request.
+
+---
+
+## **License**
+This project is licensed under the MIT License. See the LICENSE file for more details.
+
+---
+
+## **Acknowledgements**
+- **42 Network**: Special thanks to the 42 Network for providing the platform and community for this project.
+- **Docker Documentation**: A big thanks to Docker’s official documentation for making it easier to learn and implement Docker concepts.
+- **Community**: Thanks to the open-source community for their guidance and support.
+
+---
+
+### **Example Directory Structure**
+Here’s an example of the expected directory structure:
+
+```bash
+$> ls -alR
+total XX
+drwxrwxr-x 3 wil wil 4096 avril 42 20:42 .
+drwxrwxrwt 17 wil wil 4096 avril 42 20:42 ..
+-rw-rw-r-- 1 wil wil XXXX avril 42 20:42 Makefile
+drwxrwxr-x 3 wil wil 4096 avril 42 20:42 secrets
+drwxrwxr-x 3 wil wil 4096 avril 42 20:42 srcs
+./secrets:
+total XX
+drwxrwxr-x 2 wil wil 4096 avril 42 20:42 .
+drwxrwxr-x 6 wil wil 4096 avril 42 20:42 ..
+-rw-r--r-- 1 wil wil XXXX avril 42 20:42 credentials.txt
+-rw-r--r-- 1 wil wil XXXX avril 42 20:42 db_password.txt
+-rw-r--r-- 1 wil wil XXXX avril 42 20:42 db_root_password.txt
+./srcs:
+total XX
+drwxrwxr-x 3 wil wil 4096 avril 42 20:42 .
+drwxrwxr-x 3 wil wil 4096 avril 42 20:42 ..
+-rw-rw-r-- 1 wil wil XXXX avril 42 20:42 docker-compose.yml
+-rw-rw-r-- 1 wil wil XXXX avril 42 20:42 .env
+drwxrwxr-x 5 wil wil 4096 avril 42 20:42 requirements
+./srcs/requirements:
+total XX
+drwxrwxr-x 5 wil wil 4096 avril 42 20:42 .
+drwxrwxr-x 3 wil wil 4096 avril 42 20:42 ..
+drwxrwxr-x 4 wil wil 4096 avril 42 20:42 bonus
+drwxrwxr-x 4 wil wil 4096 avril 42 20:42 mariadb
+drwxrwxr-x 4 wil wil 4096 avril 42 20:42 nginx
+drwxrwxr-x
