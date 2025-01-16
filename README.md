@@ -11,10 +11,9 @@ The **Inception** project is a system administration exercise that expands your 
 3. [Mandatory Part](#mandatory-part)
 4. [Bonus Part](#bonus-part)
 5. [Installation and Usage](#installation-and-usage)
-6. [Makefile Commands](#makefile-commands)
-7. [Contributing](#contributing)
-8. [License](#license)
-9. [Acknowledgements](#acknowledgements)
+6. [Contributing](#contributing)
+7. [License](#license)
+8. [Acknowledgements](#acknowledgements)
 
 ---
 
@@ -29,7 +28,6 @@ Portainer is used as an additional service for managing Docker containers via a 
 
 - **Virtual Machine (VM)**: This project should be completed within a virtual machine.
 - **Directory Structure**: All project-related files should be located in the `srcs/` folder.
-- **Makefile**: The provided Makefile automates various tasks like building, running, and cleaning up Docker containers.
 - **Docker Setup**: Dockerfiles for each service are provided, which will be built and managed using Docker Compose.
 - **Containers**: Each service runs in its own Docker container and restarts automatically in case of a crash.
 - **Docker Network**: Containers communicate via a Docker network defined in `docker-compose.yml`.
@@ -53,15 +51,6 @@ You need to set up the following services in Docker containers:
 3. **MariaDB**:
    - Runs the database for WordPress.
    - Includes two database users: one administrator (without `admin` in the username) and one regular user.
-
-4. **Redis** (Bonus):
-   - Provides caching for WordPress.
-
-5. **FTP Server** (Bonus):
-   - An FTP server for managing WordPress website files.
-
-6. **Portainer** (Bonus):
-   - A web-based Docker management interface for managing containers, images, networks, and volumes.
 
 ### **Networking**
 - All containers should communicate over a Docker network defined in `docker-compose.yml`.
@@ -92,7 +81,8 @@ You can add the following features to the project as part of the bonus:
 ## **Installation and Usage**
 
 ### **Clone the Repository**
-Clone the repository to your local machine using:
+
+Clone the repository to your local machine:
 
 ```bash
 git clone https://github.com/aabderrafie/inception_42
@@ -100,134 +90,100 @@ cd inception
 ```
 
 ### **Build the Docker Images**
-Run the following command to build the Docker images:
+
+To build the Docker images and create the necessary directories, use:
 
 ```bash
 make build
 ```
 
+This will:
+- Build the Docker images for the services defined in `docker-compose.yml`.
+- Create necessary directories for the services (WordPress, MariaDB, Redis) if they don't exist.
+
 ### **Run the Docker Containers**
-To start the containers and set up the services:
+
+Once the images are built, you can start the containers and set up the services by running:
 
 ```bash
 make up
 ```
 
-This will start all the necessary containers in detached mode.
+This command will:
+- Set up the required directories.
+- Start the Docker containers in detached mode (i.e., in the background).
 
 ### **Check Logs**
-To view logs for the running containers:
+
+To check the logs of the running containers, you can use:
 
 ```bash
 make logs
 ```
 
+This will display the logs for all containers in the system.
+
 ### **Stop and Clean Up Containers**
-To stop and remove the containers:
+
+To stop and remove the containers, but keep the data volumes and networks, run:
 
 ```bash
 make down
 ```
 
-This command stops and removes the containers but does not remove volumes or networks.
+This command will stop and remove the running containers. It will not remove the volumes or networks that were created for the containers.
+
+### **Clean Up Docker Volumes**
+
+To clean up any unused Docker volumes, you can run:
+
+```bash
+make clean
+```
+
+This will:
+- Stop and remove the containers.
+- Prune unused Docker volumes to free up space.
 
 ### **Full Cleanup**
-To clean up Docker volumes and system resources:
 
-```bash
-make clean
-```
-
-This will remove unused Docker volumes.
-
-### **Full System Clean**
-To completely clean up the system, including volumes and unused Docker system resources:
+To perform a full cleanup, including removing containers, volumes, and data directories, use:
 
 ```bash
 make fclean
 ```
 
-This command performs a full system clean and removes all data directories.
+This will:
+- Stop and remove the containers.
+- Prune unused Docker volumes and system resources.
+- Remove the data directories (`/home/abderrafie/data/*`), effectively wiping any stored data.
 
 ### **Rebuild Everything**
-To rebuild all containers and services from scratch:
+
+If you want to rebuild everything from scratch (i.e., clean the system and rebuild the images and containers), you can use:
 
 ```bash
 make re
 ```
+
+This will:
+- Perform a full system clean (`fclean`).
+- Rebuild and start the containers from scratch.
 
 ### **Check Docker Container Status**
-To check the status of your Docker containers:
+
+To check the status of all running Docker containers, use:
 
 ```bash
 make status
 ```
 
----
-
-## **Makefile Commands**
-
-Below is a list of available Makefile commands:
-
-### **all**
-Runs the `build` and `up` commands to build Docker images and bring up the containers.
-
-```bash
-make all
-```
-
-### **build**
-Builds the Docker images for all services defined in `docker-compose.yml`.
-
-```bash
-make build
-```
-
-### **up**
-Sets up the necessary directories and starts the Docker containers.
-
-```bash
-make up
-```
-
-### **down**
-Stops and removes the running containers.
-
-```bash
-make down
-```
-
-### **clean**
-Stops and removes containers and then prunes unused Docker volumes.
-
-```bash
-make clean
-```
-
-### **fclean**
-Performs a full system cleanup by stopping and removing containers, cleaning up volumes, and removing data directories.
-
-```bash
-make fclean
-```
-
-### **re**
-Rebuilds everything from scratch by running `fclean` and `all`.
-
-```bash
-make re
-```
-
-### **status**
-Displays the status of all running Docker containers.
-
-```bash
-make status
-```
+This command will display the status of all the containers in your infrastructure, including whether they are running or stopped.
 
 ---
 
 ## **Contributing**
+
 Contributions are welcome! To contribute:
 
 1. Fork the repository.
@@ -237,11 +193,13 @@ Contributions are welcome! To contribute:
 ---
 
 ## **License**
+
 This project is licensed under the MIT License. See the LICENSE file for more details.
 
 ---
 
 ## **Acknowledgements**
+
 - **42 Network**: Special thanks to the 42 Network for providing the platform and community for this project.
 - **Docker Documentation**: A big thanks to Docker’s official documentation for making it easier to learn and implement Docker concepts.
 - **Community**: Thanks to the open-source community for their guidance and support.
@@ -249,35 +207,47 @@ This project is licensed under the MIT License. See the LICENSE file for more de
 ---
 
 ### **Example Directory Structure**
-Here’s an example of the expected directory structure:
+
+Here’s an example of the expected directory structure (formatted as a tree):
 
 ```bash
-$> ls -alR
-total XX
-drwxrwxr-x 3 wil wil 4096 avril 42 20:42 .
-drwxrwxrwt 17 wil wil 4096 avril 42 20:42 ..
--rw-rw-r-- 1 wil wil XXXX avril 42 20:42 Makefile
-drwxrwxr-x 3 wil wil 4096 avril 42 20:42 secrets
-drwxrwxr-x 3 wil wil 4096 avril 42 20:42 srcs
-./secrets:
-total XX
-drwxrwxr-x 2 wil wil 4096 avril 42 20:42 .
-drwxrwxr-x 6 wil wil 4096 avril 42 20:42 ..
--rw-r--r-- 1 wil wil XXXX avril 42 20:42 credentials.txt
--rw-r--r-- 1 wil wil XXXX avril 42 20:42 db_password.txt
--rw-r--r-- 1 wil wil XXXX avril 42 20:42 db_root_password.txt
-./srcs:
-total XX
-drwxrwxr-x 3 wil wil 4096 avril 42 20:42 .
-drwxrwxr-x 3 wil wil 4096 avril 42 20:42 ..
--rw-rw-r-- 1 wil wil XXXX avril 42 20:42 docker-compose.yml
--rw-rw-r-- 1 wil wil XXXX avril 42 20:42 .env
-drwxrwxr-x 5 wil wil 4096 avril 42 20:42 requirements
-./srcs/requirements:
-total XX
-drwxrwxr-x 5 wil wil 4096 avril 42 20:42 .
-drwxrwxr-x 3 wil wil 4096 avril 42 20:42 ..
-drwxrwxr-x 4 wil wil 4096 avril 42 20:42 bonus
-drwxrwxr-x 4 wil wil 4096 avril 42 20:42 mariadb
-drwxrwxr-x 4 wil wil 4096 avril 42 20:42 nginx
-drwxrwxr-x
+$> tree
+.
+├── Makefile
+├── secrets
+│   ├── credentials.txt
+│   ├── db_password.txt
+│   └── db_root_password.txt
+└── srcs
+    ├── docker-compose.yml
+    ├── .env
+    ├── requirements
+    │   ├── bonus
+    │   ├── mariadb
+    │   ├── nginx
+    │   ├── wordpress
+    └── ...
+```
+
+---
+
+### **Example File Descriptions:**
+
+- **Makefile**: Automates tasks for building, running, and cleaning up Docker containers.
+- **secrets/**: Contains sensitive data like database passwords stored securely.
+- **srcs/**: Contains the main application files, including `docker-compose.yml`, `.env`, and service configuration files.
+
+---
+
+### **Additional Notes:**
+
+- Ensure that sensitive information like passwords are **not** hardcoded directly in your Dockerfiles.
+- Use `.env` files and **Docker secrets** to securely manage credentials.
+
+---
+
+### Changes:
+- Updated the **Installation and Usage** section to reference the `make` commands.
+- All `make` commands are now part of the workflow for building, running, and cleaning the containers.
+
+Let me know if any further changes are needed!
