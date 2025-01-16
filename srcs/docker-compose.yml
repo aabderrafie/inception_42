@@ -4,11 +4,11 @@ services:
   wordpress:
     container_name: wordpress
     image: wordpress:13.37
-    depends_on:
-      - mariadb
     build:
       context: ./requirements/wordpress
-      dockerfile: Dockerfile
+    depends_on:
+      - mariadb
+      - redis
     restart: always
     env_file:
       - .env
@@ -16,8 +16,6 @@ services:
       - wordpress_data:/var/www/html/wordpress
     networks:
       - network
-    ports:
-      - "9000:9000"
     secrets:
       - db_password
       - credentials
@@ -34,8 +32,6 @@ services:
     restart: always
     env_file:
       - .env
-    ports:
-      - "3306:3306"
     secrets:
       - db_password
       - db_root_password
@@ -106,6 +102,8 @@ services:
     build: ./requirements/bonus/website
     networks:
       - network
+    ports:
+      - "80:80"
     restart: always
 
   # portainer service

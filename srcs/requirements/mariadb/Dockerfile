@@ -10,6 +10,6 @@ RUN chmod +x ./setup_mariadb.sh
 
 EXPOSE 3306
 
-ENTRYPOINT ["./setup_mariadb.sh"]
+# ENTRYPOINT ["./setup_mariadb.sh"]
 
-CMD ["mariadbd", "--user=mysql", "--bind-address=0.0.0.0"]
+CMD ["./setup_mariadb.sh"]

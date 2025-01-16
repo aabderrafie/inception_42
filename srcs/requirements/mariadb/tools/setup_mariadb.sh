@@ -19,4 +19,4 @@ echo 'FLUSH PRIVILEGES;' >> init.sql
 
 mariadbd --user=mysql --bootstrap < init.sql
 
-exec "$@"
+exec mariadbd --user=mysql --bind-address=0.0.0.0
