@@ -78,6 +78,10 @@ You can add the following features to the project as part of the bonus:
 
 ---
 
+Sure! Here's the updated **Installation and Usage** section with additional details about using `make` commands to both build and bring up the containers:
+
+---
+
 ## **Installation and Usage**
 
 ### **Clone the Repository**
@@ -89,53 +93,54 @@ git clone https://github.com/aabderrafie/inception_42
 cd inception
 ```
 
-### **Build the Docker Images**
+### **Build the Docker Images and Start the Containers**
 
-To build the Docker images and create the necessary directories, use:
-
-```bash
-make build
-```
-
-This will:
-- Build the Docker images for the services defined in `docker-compose.yml`.
-- Create necessary directories for the services (WordPress, MariaDB, Redis) if they don't exist.
-
-### **Run the Docker Containers**
-
-Once the images are built, you can start the containers and set up the services by running:
+To build the Docker images for all services and bring up the containers, use the following `make` command:
 
 ```bash
-make up
+make all
 ```
 
-This command will:
-- Set up the required directories.
-- Start the Docker containers in detached mode (i.e., in the background).
+This command performs two actions:
+1. **Builds** the Docker images for all services defined in `docker-compose.yml`.
+2. **Starts** the containers in detached mode, meaning they will run in the background.
 
-### **Check Logs**
+Alternatively, you can run the build and start steps separately:
 
-To check the logs of the running containers, you can use:
+1. **Build the Docker images**:
 
-```bash
-make logs
-```
+    ```bash
+    make build
+    ```
 
-This will display the logs for all containers in the system.
+    This will:
+    - Build the Docker images for all the services (NGINX, WordPress, MariaDB, etc.) defined in your `docker-compose.yml`.
+    - Create necessary directories for the services (WordPress, MariaDB, Redis) if they don't already exist.
+
+2. **Start the containers**:
+
+    ```bash
+    make up
+    ```
+
+    This will:
+    - Set up the required directories.
+    - Start all the Docker containers in detached mode, ensuring that each service (NGINX, WordPress, MariaDB, etc.) is up and running.
 
 ### **Stop and Clean Up Containers**
 
-To stop and remove the containers, but keep the data volumes and networks, run:
+To stop and remove the containers but keep the data volumes and networks, run:
 
 ```bash
 make down
 ```
 
-This command will stop and remove the running containers. It will not remove the volumes or networks that were created for the containers.
+This command will:
+- Stop and remove the running containers, but it will not remove the volumes or networks.
 
 ### **Clean Up Docker Volumes**
 
-To clean up any unused Docker volumes, you can run:
+To clean up any unused Docker volumes and free up space, you can run:
 
 ```bash
 make clean
@@ -143,7 +148,7 @@ make clean
 
 This will:
 - Stop and remove the containers.
-- Prune unused Docker volumes to free up space.
+- Prune unused Docker volumes.
 
 ### **Full Cleanup**
 
@@ -160,7 +165,7 @@ This will:
 
 ### **Rebuild Everything**
 
-If you want to rebuild everything from scratch (i.e., clean the system and rebuild the images and containers), you can use:
+If you want to rebuild everything from scratch (i.e., clean the system and rebuild the images and containers), use:
 
 ```bash
 make re
