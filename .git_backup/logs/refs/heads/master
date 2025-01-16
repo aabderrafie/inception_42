@@ -1,0 +1,7 @@
+0000000000000000000000000000000000000000 1001c0ced5e8dfbae55b3cd84d76a4077aa17450 abderrafie askal <abderrafie@kali.(none)> 1736070012 -0500	clone: from https://github.com/aabderrafie/inception.git
+1001c0ced5e8dfbae55b3cd84d76a4077aa17450 0589e2c350904ecda94d0c9f4211b293ef6b8897 aabderrafie <abderrafie.askal@gmail.com> 1736784086 -0500	commit: bonus
+0589e2c350904ecda94d0c9f4211b293ef6b8897 2e8b74d4ea6d2f764f2482bdf27d767bce449a24 aabderrafie <abderrafie.askal@gmail.com> 1736785951 -0500	commit: Remove submodule directory
+2e8b74d4ea6d2f764f2482bdf27d767bce449a24 d6f0f1de9cf438005588630dadad8beb7cd0a576 aabderrafie <abderrafie.askal@gmail.com> 1736869694 -0500	commit (amend): Add .gitignore file to exclude secrets, logs, temporary files, and build artifacts, replace cadvisor with portainer
+d6f0f1de9cf438005588630dadad8beb7cd0a576 98b71bdb1f5d02a59c4864eea56165989d021367 aabderrafie <abderrafie.askal@gmail.com> 1737044159 -0500	commit: last version of inception
+98b71bdb1f5d02a59c4864eea56165989d021367 ec50c5d9afd58ad8b5c71915e87bdc60b8980a70 aabderrafie <abderrafie.askal@gmail.com> 1737044331 -0500	commit: last version of inception 2
+ec50c5d9afd58ad8b5c71915e87bdc60b8980a70 aad369063dd61ea458ad53a59528a697c8cededc aabderrafie <abderrafie.askal@gmail.com> 1737046488 -0500	commit: Update Bonus
